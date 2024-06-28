@@ -5,3 +5,7 @@ Access the virtual environment (need to do everytime accessing repo):
 
 Install dependencies (only need to do in first time accessing repo):
 `pip install numpy` (and similar for other packages)
+
+## About the codebase
+
+- Put experimental algos in `/our-algos` along with documentation in `/our-algos/algo-documentation.md`.
