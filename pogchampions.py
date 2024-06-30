@@ -10,23 +10,37 @@ nInst = 50
 currentPos = np.zeros(nInst)
 
 
-# Simple Moving Average
-def sma(data, window):
-    # weights array is an array of '1/window'. Multiplying it with the data array will give us the 
-    # moving average since '1/window * data' describes the average of each datapoint
-    weights = np.repeat(1.0, window)/window
-    smas = np.convolve(data, weights, 'valid')
+# Padded Simple Moving Average
+def sma_padded(data, window):
+    # We pad (window - 1) and (0) (meaning that the SMA extends over the entire
+    # data set)
+    padded_data = np.pad(data, (window-1, 0), mode='edge')
+    weights = np.repeat(1.0, window) / window
+    smas = np.convolve(padded_data, weights, 'valid')
     return smas
 
 def getMyPosition(prcSoFar):
     global currentPos
     (nins, nt) = prcSoFar.shape
-    # If the window is too small, don't make a play (don't have enough data to know)
+    # If the window is too small, don't make a play (don't have enough data to know).
+    # I mean, technically it works now we use the padded SMA, but it's not a good idea
+    # since the SMA will be very inaccurate with so little data.
     if (nt < 20):
         return np.zeros(nins)
-    lastRet = np.log(prcSoFar[:, -1] / prcSoFar[:, -2])
-    lNorm = np.sqrt(lastRet.dot(lastRet))
-    lastRet /= lNorm
-    rpos = np.array([int(x) for x in 5000 * lastRet / prcSoFar[:, -1]])
-    currentPos = np.array([int(x) for x in currentPos+rpos])
+    
+    # The SMA from sma_padded is 1 dimension but a dataframe is 2 dimensions
+    # Also, it needs to be a numpy array (using np.array), otherwise 
+    # the rpos calculation will not work
+    sma_df = np.array([sma_padded(prcSoFar[i], 20) for i in range(nins)])
+
+    # We use the last value of the SMA to determine our position
+    sma_last_pos = sma_df[:, -1]
+
+    # If the actual is SMA is larger than Current Price, we buy
+    rpos = np.array([int(x) for x in 1 * (sma_last_pos - prcSoFar[:, -1])])
+    # currentPos = np.array([int(x) for x in currentPos+rpos])
+    currentPos = np.array([int(x) for x in rpos])
+    print(sma_last_pos[:5])
+    print(prcSoFar[:, -1][:5])
+    print(currentPos[:5])
     return currentPos
