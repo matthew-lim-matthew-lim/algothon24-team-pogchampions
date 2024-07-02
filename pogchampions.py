@@ -37,9 +37,9 @@ def getMyPosition(prcSoFar):
     sma_last_pos = sma_df[:, -1]
 
     # If the actual is SMA is larger than Current Price, we buy
-    rpos = np.array([int(x) for x in 1 * (sma_last_pos - prcSoFar[:, -1])])
-    # currentPos = np.array([int(x) for x in currentPos+rpos])
-    currentPos = np.array([int(x) for x in rpos])
+    rpos = np.array([int(x) for x in 1000 * (abs(sma_last_pos) - abs(prcSoFar[:, -1]))/(abs(sma_last_pos))])
+    currentPos = np.array([int(x) for x in currentPos + rpos])
+    # currentPos = np.array([int(x) for x in rpos])
     print(sma_last_pos[:5])
     print(prcSoFar[:, -1][:5])
     print(currentPos[:5])
