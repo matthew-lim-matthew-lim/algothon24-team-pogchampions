@@ -1,3 +1,15 @@
+# Algos to Try
+
+- Exponential Moving Average
+    - Moving averages might be limited, according to a friend. 
+- Range breakout
+    - Not sure if we have enough data for it. Could be cool though.
+- Mean Reversion Algorithm
+- Pairs Trading
+    - Could be a safe strategy as it was outlined in Seminar 2.
+
+# Algos We Have
+
 ## 28-06-default-algo
 
 ```
