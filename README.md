@@ -7,6 +7,7 @@
 - Mean Reversion Algorithm
 - Pairs Trading
     - Could be a safe strategy as it was outlined in Seminar 2.
+    - https://github.com/KidQuant/Pairs-Trading-With-Python/blob/master/PairsTrading.ipynb
 
 # Algos We Have
 
