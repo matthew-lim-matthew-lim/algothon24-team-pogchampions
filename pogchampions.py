@@ -25,22 +25,33 @@ def getMyPosition(prcSoFar):
     # If the window is too small, don't make a play (don't have enough data to know).
     # I mean, technically it works now we use the padded SMA, but it's not a good idea
     # since the SMA will be very inaccurate with so little data.
-    if (nt < 20):
+    if (nt < 15):
         return np.zeros(nins)
     
     # The SMA from sma_padded is 1 dimension but a dataframe is 2 dimensions
     # Also, it needs to be a numpy array (using np.array), otherwise 
     # the rpos calculation will not work
-    sma_df = np.array([sma_padded(prcSoFar[i], 20) for i in range(nins)])
+    sma_df = np.array([sma_padded(prcSoFar[i], 15) for i in range(nins)])
 
     # We use the last value of the SMA to determine our position
     sma_last_pos = sma_df[:, -1]
 
-    # If the actual is SMA is larger than Current Price, we buy
-    rpos = np.array([int(x) for x in 1000 * (abs(sma_last_pos) - abs(prcSoFar[:, -1]))/(abs(sma_last_pos))])
-    currentPos = np.array([int(x) for x in currentPos + rpos])
+    # Adjust the position sizing multiplier
+    multiplier = 1500
+    
+    # Calculate momentum (rate of change) and scale positions accordingly
+    momentum = 100 * (prcSoFar[:, -1] - prcSoFar[:, -2]) / prcSoFar[:, -2]
+    if (nt < 15):
+        momentum = np.ones(nins)
+    print("Momentum: ", momentum[:5])
+    rpos = np.array([int(multiplier * (sma_last_pos[i] - prcSoFar[i, -1]) / sma_last_pos[i] * momentum[i]) for i in range(nins)])
+    
+    # Smooth out position changes to avoid drastic fluctuations
+    rpos = np.clip(rpos, -50, 50)
+    currentPos = currentPos + rpos
+
     # currentPos = np.array([int(x) for x in rpos])
-    print(sma_last_pos[:5])
-    print(prcSoFar[:, -1][:5])
-    print(currentPos[:5])
+    print("SMA Last Pos: ", sma_last_pos[:5])
+    print("Prev Real Pos: ", prcSoFar[:, -1][:5])
+    print("New Pos: ", currentPos[:5])
     return currentPos
