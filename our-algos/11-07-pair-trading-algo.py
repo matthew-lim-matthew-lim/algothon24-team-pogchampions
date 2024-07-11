@@ -6,7 +6,6 @@ import statsmodels.api as sm
 nInst = 50
 currentPos = np.zeros(nInst)
 
-# Load your data
 df = pd.read_csv('prices.txt', sep='\s+', header=None)
 df.columns = [f'Stock_{i}' for i in range(df.shape[1])]
 
@@ -30,7 +29,8 @@ def find_cointegrated_pairs(data):
 find_cointegrated_pairs(df)
 sorted_pairs = sorted(pairs, key=lambda x: x[2])
 
-trading_pairs = [(pair[0], pair[1]) for pair in sorted_pairs[:5]]  # Top 5 pairs
+# Use Top 5 pairs
+trading_pairs = [(pair[0], pair[1]) for pair in sorted_pairs[:5]]  
 
 def getMyPosition(prcSoFar):
     global currentPos
