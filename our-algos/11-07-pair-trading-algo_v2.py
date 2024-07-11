@@ -6,7 +6,6 @@ import statsmodels.api as sm
 nInst = 50
 currentPos = np.zeros(nInst)
 
-# Load your data
 df = pd.read_csv('prices.txt', sep='\s+', header=None)
 df.columns = [f'Stock_{i}' for i in range(df.shape[1])]
 
@@ -30,7 +29,7 @@ def find_cointegrated_pairs(data):
 find_cointegrated_pairs(df)
 sorted_pairs = sorted(pairs, key=lambda x: x[2])
 
-trading_pairs = [(pair[0], pair[1]) for pair in sorted_pairs[:2]]  # Top pairs
+trading_pairs = [(pair[0], pair[1]) for pair in sorted_pairs[:2]] 
 
 def getMyPosition(prcSoFar):
     global currentPos 
@@ -44,8 +43,8 @@ def getMyPosition(prcSoFar):
         spread = prcSoFar[stock1, :] - prcSoFar[stock2, :]
         zscore = (spread - spread.mean()) / spread.std()
 
-        stock_1_position_size = 0.1 * prcSoFar[stock1, -1] * abs(zscore[-1])  # 10% of current stock1 price
-        stock_2_position_size = 0.1 * prcSoFar[stock2, -1] * abs(zscore[-1])  # 10% of current stock2 price
+        stock_1_position_size = 0.1 * prcSoFar[stock1, -1] * abs(zscore[-1]) 
+        stock_2_position_size = 0.1 * prcSoFar[stock2, -1] * abs(zscore[-1]) 
         
         if zscore[-1] > 1.5:
             currentPos[stock1] -= stock_1_position_size
