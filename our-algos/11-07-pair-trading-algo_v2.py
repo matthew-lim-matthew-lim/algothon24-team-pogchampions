@@ -21,6 +21,7 @@ def find_cointegrated_pairs(data):
             S1 = data.iloc[:, i]
             S2 = data.iloc[:, j]
             result = coint(S1, S2)
+            score = result[0]
             pvalue = result[1]
 
             if pvalue < 0.01:
@@ -29,7 +30,7 @@ def find_cointegrated_pairs(data):
 find_cointegrated_pairs(df)
 sorted_pairs = sorted(pairs, key=lambda x: x[2])
 
-trading_pairs = [(pair[0], pair[1]) for pair in sorted_pairs]  # Top pairs
+trading_pairs = [(pair[0], pair[1]) for pair in sorted_pairs[:2]]  # Top pairs
 
 def getMyPosition(prcSoFar):
     global currentPos 
@@ -43,15 +44,15 @@ def getMyPosition(prcSoFar):
         spread = prcSoFar[stock1, :] - prcSoFar[stock2, :]
         zscore = (spread - spread.mean()) / spread.std()
 
-        stock_1_position_size = 0.3 * prcSoFar[stock1, -1] * abs(zscore[-1])  # 10% of current stock1 price
-        stock_2_position_size = 0.3 * prcSoFar[stock2, -1] * abs(zscore[-1])  # 10% of current stock2 price
+        stock_1_position_size = 0.1 * prcSoFar[stock1, -1] * abs(zscore[-1])  # 10% of current stock1 price
+        stock_2_position_size = 0.1 * prcSoFar[stock2, -1] * abs(zscore[-1])  # 10% of current stock2 price
         
-        if zscore[-1] > 1.25:
-            currentPos[stock1] = -stock_1_position_size
-            currentPos[stock2] = stock_2_position_size
-        elif zscore[-1] < -1.25:
-            currentPos[stock1] = stock_1_position_size
-            currentPos[stock2] = -stock_2_position_size
+        if zscore[-1] > 1.5:
+            currentPos[stock1] -= stock_1_position_size
+            currentPos[stock2] += stock_2_position_size
+        elif zscore[-1] < -1.5:
+            currentPos[stock1] += stock_1_position_size
+            currentPos[stock2] -= stock_2_position_size
         else:
             currentPos[stock1] = 0
             currentPos[stock2] = 0
